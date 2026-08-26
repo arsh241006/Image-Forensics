@@ -20,7 +20,10 @@ model = build_spatial_model().to(device)
 criterion = nn.CrossEntropyLoss()
 # optimizer decides how to adjust the model's numbers based on that "wrongness"
 # note: only model.fc.parameters() are being trained, since everything else is frozen
-optimizer = torch.optim.Adam(model.fc.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(
+    list(model.fc_feature.parameters()) + list(model.fc_classifier.parameters()),
+    lr=0.001
+)
  
 EPOCHS = 8
  
