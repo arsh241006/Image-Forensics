@@ -1,13 +1,24 @@
 import cv2
 import numpy as np
 
+IMAGENET_MEAN = np.array([0.485, 0.456, 0.406])
+IMAGENET_STD = np.array([0.229, 0.224, 0.225])
+
+def _denormalize(img_rgb):
+    """
+    Reverses the ImageNet normalization applied by load_and_preprocess(),
+    bringing pixel values back to a proper 0-1 range before DCT/FFT,
+    since compression artifacts are tied to real pixel intensity,
+    not a normalized version of it.
+    """
+    img = img_rgb * IMAGENET_STD + IMAGENET_MEAN
+    img = np.clip(img, 0, 1)  # normalization + float error can push slightly outside 0-1
+    return img
+
 def extract_dct_features(img_rgb, block_size=8):
-    """
-    Takes a preprocessed RGB image (already resized to 224x224 by
-    load_and_preprocess) and returns its block-DCT representation.
-    """
-    # convert to grayscale for DCT — luminance is where compression artifacts live
-    img_gray = cv2.cvtColor((img_rgb * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
+    img_denorm = _denormalize(img_rgb)
+    img_gray = cv2.cvtColor((img_denorm * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
+
     h, w = img_gray.shape
     h = h - (h % block_size)
     w = w - (w % block_size)
@@ -18,13 +29,13 @@ def extract_dct_features(img_rgb, block_size=8):
         for j in range(0, w, block_size):
             block = img_gray[i:i+block_size, j:j+block_size].astype(np.float32)
             dct_map[i:i+block_size, j:j+block_size] = cv2.dct(block)
-    return dct_map  # shape: (224, 224) roughly, same spatial size as input
+
+    dct_map = np.sign(dct_map) * np.log1p(np.abs(dct_map))
+    return dct_map
 
 def extract_fft_features(img_rgb):
-    """
-    Takes a preprocessed RGB image and returns its FFT magnitude spectrum.
-    """
-    img_gray = cv2.cvtColor((img_rgb * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
+    img_denorm = _denormalize(img_rgb)
+    img_gray = cv2.cvtColor((img_denorm * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
     f = np.fft.fft2(img_gray)
     fshift = np.fft.fftshift(f)
     magnitude = np.log(np.abs(fshift) + 1)
