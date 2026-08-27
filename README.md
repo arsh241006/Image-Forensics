@@ -12,3 +12,9 @@
 ### Important
 
 Columbia and COVERAGE must **never be mixed into the CASIA v2 train/validation/test split**. This ensures that Phase 5 measures genuine cross-dataset generalization.
+
+## Branch Feature Vector Convention (agreed Week 2)
+
+- Person A (spatial_branch): SpatialCNN.forward(x, return_features=True) -> (batch, 128)
+- Person B (freq_branch): FrequencyCNN.forward(x, return_features=True) -> (batch, 128)
+- Fusion (Week 4) concatenates these into a (batch, 256) vector before classification.
