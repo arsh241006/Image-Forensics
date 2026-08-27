@@ -127,3 +127,33 @@ The dataset is relatively small and mainly contains indoor scenes. It also lacks
 **Kaggle:** [Columbia Dataset – Kaggle](https://www.kaggle.com/datasets/shriya0/columbia?resource=download&utm_source=chatgpt.com)
 
 **Original:** Columbia University DVMM Laboratory.
+
+
+## COVERAGE
+
+**Source:** [COVERAGE — A Novel Database for Copy-Move Forgery Detection](https://github.com/wenbihan/coveragedataset)
+
+### Folder Structure
+
+```text
+COVERAGE/
+├── image/    # N.tif = authentic, Nt.tif = tampered
+├── mask/     # Ncopy.tif, Nforged.tif, Npaste.tif (3 masks per image)
+└── label/    # .mat metadata files (FEA, fPSNR, TFlabel, Tlevel) — not used by loader
+```
+
+### Dataset Details
+
+| Folder | Description | Images |
+|---|---|---|
+| `image/` | Authentic + tampered (copy-move) | 100 pairs |
+| `mask/` | Ground-truth tampering masks | 100 |
+
+### Notes
+
+* Mask suffix used for ground truth: **`Nforged.tif`** — verified visually
+  against `notebooks/coverage_sanity_check.png`; white region correctly
+  highlights the pasted/duplicated object.
+* `copy.tif` and `paste.tif` are also present but not used by the current loader.
+* No `readme.txt` shipped with this specific download — verify filenames
+  with `Get-ChildItem`/`ls` before assuming this pattern if you re-download.
