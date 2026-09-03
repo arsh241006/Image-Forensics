@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from spatial_branch.dataset import TamperedImageDataset
 from spatial_branch.model import build_spatial_model
 
-VARIANT = 'raw'  # change to 'ela' or 'srm' to train other variants
+VARIANT = 'srm'  # change to 'ela' or 'srm' to train other variants
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"Training variant '{VARIANT}' on:", device)
