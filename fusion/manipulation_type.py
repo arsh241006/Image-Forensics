@@ -93,12 +93,15 @@ def detect_splicing_region(image_path, block_size=8, z_threshold=3.5, min_blocks
 # ============================================================
 # COMBINED THREE-WAY ESTIMATE
 # ============================================================
-def estimate_manipulation_type(image_path, match_threshold=10,
+def estimate_manipulation_type(image_path, match_threshold=5,
                                z_threshold=3.5, min_blocks=12,
-                               use_filename_hint=False):
+                               use_filename_hint=False,
+                               use_splicing_check=False):
     """
     use_filename_hint: CASIA-only shortcut that reads the label from the
     filename. Keep False for any real evaluation.
+    use_splicing_check: the DCT splicing check separates spliced from
+    authentic images only weakly, so it is off by default.
     """
     if use_filename_hint:
         filename = image_path.replace("\\", "/").split("/")[-1]
@@ -109,14 +112,15 @@ def estimate_manipulation_type(image_path, match_threshold=10,
 
     is_copy_move, consistent_matches = _check_copy_move(
         image_path, match_threshold)
-    has_splice_region, cluster_blocks = detect_splicing_region(
-        image_path, z_threshold=z_threshold, min_blocks=min_blocks
-    )
-
     if is_copy_move:
         return "copy-move", {"consistent_matches": consistent_matches}
-    elif has_splice_region:
+
+    if not use_splicing_check:
+        return "splicing_or_other", {"consistent_matches": consistent_matches}
+
+    has_splice_region, cluster_blocks = detect_splicing_region(
+        image_path, z_threshold=z_threshold, min_blocks=min_blocks)
+    if has_splice_region:
         return "splicing", {"cluster_blocks": cluster_blocks}
-    else:
-        return "uncertain", {"consistent_matches": consistent_matches,
-                             "cluster_blocks": cluster_blocks}
+    return "uncertain", {"consistent_matches": consistent_matches,
+                         "cluster_blocks": cluster_blocks}
