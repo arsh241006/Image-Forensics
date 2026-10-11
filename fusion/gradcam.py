@@ -72,3 +72,36 @@ def overlay_heatmap(original_img, heatmap, alpha=0.4):
     heatmap_colored = cv2.cvtColor(heatmap_colored, cv2.COLOR_BGR2RGB)  # fix: match RGB order
     overlaid = cv2.addWeighted(original_img, 1 - alpha, heatmap_colored, alpha, 0)
     return overlaid
+from preprocessing import load_and_preprocess
+from spatial_branch.ela_transform import compute_ela
+from spatial_branch.model import build_spatial_model
+
+
+def estimate_heatmap(image_path, weights_path='spatial_branch/baseline_model_ela.pt', target_class=1):
+    """
+    Consistent image_path-based interface, matching the team's other
+    Phase 4 functions (estimate_manipulation_type, etc).
+
+    Handles preprocessing internally — loads the model fresh each call,
+    which is simpler but slower than reusing a loaded model across many
+    images. Fine for single-image/demo use; for batch processing (like
+    Day 4's IoU validation), load the model once and call generate_heatmap
+    directly instead.
+
+    Returns: raw (7,7) heatmap array, values 0-1 — same as generate_heatmap.
+    Call overlay_heatmap() separately if a visual overlay is needed.
+    """
+    model = build_spatial_model(feature_dim=128, variant='ela')
+    model.load_state_dict(torch.load(weights_path, map_location='cpu'))
+
+    target_layer = model.backbone[-2][-1]
+    gradcam = GradCAM(model, target_layer)
+
+    img = load_and_preprocess(image_path)
+    ela = compute_ela(image_path)
+
+    img_tensor = torch.tensor(img, dtype=torch.float32).permute(2, 0, 1).unsqueeze(0)
+    ela_tensor = torch.tensor(ela, dtype=torch.float32).permute(2, 0, 1).unsqueeze(0)
+
+    heatmap = gradcam.generate_heatmap(img_tensor, ela_tensor, target_class=target_class)
+    return heatmap
