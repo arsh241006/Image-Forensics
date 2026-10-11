@@ -6,7 +6,7 @@ from collections import Counter
 # ============================================================
 # COPY-MOVE DETECTION: ORB self-matching with shift consistency
 # ============================================================
-def _check_copy_move(image_path, match_threshold=5, max_features=5000,
+def _check_copy_move(image_path, match_threshold=8, max_features=5000,
                      match_ratio=0.85, min_distance=30, shift_bin=8):
     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     if img is None:
@@ -93,7 +93,7 @@ def detect_splicing_region(image_path, block_size=8, z_threshold=3.5, min_blocks
 # ============================================================
 # COMBINED THREE-WAY ESTIMATE
 # ============================================================
-def estimate_manipulation_type(image_path, match_threshold=5,
+def estimate_manipulation_type(image_path, match_threshold=8,
                                z_threshold=3.5, min_blocks=12,
                                use_filename_hint=False,
                                use_splicing_check=False):
