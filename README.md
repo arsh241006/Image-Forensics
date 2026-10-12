@@ -51,3 +51,40 @@ The copy-move heuristic was evaluated on a held-out sample of
 
 A threshold of **8** was selected as a compromise between copy-move
 detection and false-positive rate.
+## Current Evaluation
+
+The manipulation-type estimator was evaluated on a small held-out test split
+containing 30 images from each class (Tp_S, Tp_D, and Authentic).
+
+### Copy-Move Detection
+
+A match threshold of **8** was selected based on the test results:
+
+| Class | Detected as Copy-Move |
+|---|---:|
+| Tp_S (Copy-Move) | 14/30 (47%) |
+| Tp_D (Splicing) | 2/30 (7%) |
+| Authentic | 2/30 (7%) |
+
+The threshold of 8 provided the same copy-move detection rate as threshold 5
+while producing fewer false alarms on authentic images.
+
+### Splicing Detection
+
+The DCT-based splicing detector currently shows only a weak signal and is
+therefore **disabled by default**.
+
+At `min_blocks=12`:
+
+- Tp_D detected: 16/30 (53%)
+- Authentic false alarms: 8/30 (27%)
+
+This component is considered experimental and requires further improvement
+before being used as a primary classifier.
+
+### Limitations
+
+The current manipulation-type estimator is a heuristic system rather than a
+fully trained manipulation classifier. Copy-move detection can miss some
+tampered images, while repeated textures and image characteristics can produce
+false positives. Further evaluation and refinement are required.
