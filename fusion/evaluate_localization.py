@@ -53,6 +53,11 @@ for idx in range(len(coverage_ds)):
     # CoverageDataset gives preprocessed tensors already, but ELA needs
     # the raw file path — reconstruct it from the known pattern
     img_path = os.path.join(coverage_ds.image_dir, filename)
+    # Match the shared single-image inference preprocessing.
+    rgb = load_and_preprocess(img_path, size=coverage_ds.size)
+    img_tensor = torch.from_numpy(
+    np.asarray(rgb, dtype=np.float32)
+    ).permute(2, 0, 1)
     ela = compute_ela(img_path)
     ela_tensor = torch.tensor(ela, dtype=torch.float32).permute(2, 0, 1)
 
@@ -82,3 +87,18 @@ for fname, score in results_log[:3]:
 print("\n3 strongest results:")
 for fname, score in results_log[-3:]:
     print(f"  {fname}: IoU = {score:.3f}")
+
+import csv
+from pathlib import Path
+
+results_dir = Path("results/localization")
+results_dir.mkdir(parents=True, exist_ok=True)
+
+output_path = results_dir / "coverage_iou.csv"
+
+with output_path.open("w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["filename", "iou"])
+    writer.writerows(results_log)
+
+print(f"\nPer-image results saved to: {output_path}")
