@@ -49,7 +49,11 @@ class CoverageDataset(Dataset):
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
         if mask is None:
             raise FileNotFoundError(f"No mask found for {img_filename} at {mask_path}")
-        mask = cv2.resize(mask, (self.size, self.size))
+        mask = cv2.resize(
+    mask,
+    (self.size, self.size),
+    interpolation=cv2.INTER_NEAREST
+)
         mask = (mask > 127).astype(np.float32)  # binarize: white=1 (tampered), black=0
 
         img_tensor = torch.tensor(img, dtype=torch.float32).permute(2, 0, 1)

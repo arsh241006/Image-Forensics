@@ -55,3 +55,68 @@ echo done
 Output
 
 done
+
+## Day 4: ELA compatibility investigation
+
+Inspected ELA outputs for 13.tif, 13t.tif, and 69t.tif using
+JPEG quality 90 and scale 15. Responses mainly followed image
+edges and textures. The authentic/tampered scene-13 pair showed
+broadly similar patterns, without clearly isolating the modification.
+
+We retained actual ELA input to evaluate the trained model under
+its existing input configuration. A zero-auxiliary fallback was
+not evaluated and is not claimed as a validated alternative.
+
+Evaluation covered 99 available tampered images at threshold 0.5.
+Mean IoU was 0.141. The strongest case was 69t.tif (0.492);
+13t.tif, 15t.tif, and 1t.tif each scored 0.000.
+67t.tif was unavailable locally and was excluded.
+
+These observations suggest limited transfer to COVERAGE.
+Differences in image encoding, manipulation type, and the coarse
+Grad-CAM resolution are possible contributors; their individual
+effects have not been established.
+
+## Day 5: Illustrated best and worst cases
+
+![Best and worst COVERAGE examples](../notebooks/day5_best_worst.png)
+
+Each row shows the original image, tampered-class Grad-CAM
+overlay, heatmap thresholded at 0.5, and ground-truth mask.
+
+### Best case: 5t.tif — IoU 0.513
+
+The strongest activation overlaps the right-hand product box,
+which corresponds to the ground-truth tampered region.
+However, the predicted region extends beyond the box and
+includes a separate false-positive patch on the left.
+Localization is therefore partial, with inaccurate boundaries.
+
+The relatively large target region may help the coarse
+Grad-CAM map achieve overlap. This is a possible explanation,
+not evidence that the model detected manipulation artifacts.
+
+### Zero-overlap case: 19t.tif — IoU 0.000
+
+The ground-truth mask marks the left corn cob, whereas the
+thresholded heatmap highlights patches around the right cob
+and the shelf above it. No predicted pixels overlap the
+ground-truth region at threshold 0.5.
+
+Attention to the visually similar neighbouring object is a
+possible explanation. The figure alone cannot establish why
+the model selected those regions.
+
+### Overall interpretation
+
+Mean IoU was 0.115 across 99 available tampered images.
+Image 67t.tif was unavailable and excluded.
+
+Evaluation used ImageNet-normalized RGB, actual ELA inputs,
+and nearest-neighbour mask resizing. The heatmap threshold
+was fixed at 0.5 and was not tuned.
+
+These examples show that Grad-CAM can overlap the annotated
+region in some cases but can also highlight unrelated content.
+It explains the spatial classifier's response and should not
+be treated as a validated pixel-level tampering detector.
