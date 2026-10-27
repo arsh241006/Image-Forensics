@@ -8,8 +8,28 @@ const USE_MOCK = process.env.REACT_APP_USE_MOCK === "true";
 
 export async function analyzeImage(file, { signal } = {}) {
   if (USE_MOCK) {
-    return mockResponse(file.name);
-  }
+  await new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException("Request canceled", "AbortError"));
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", handleAbort);
+      resolve();
+    }, 1500);
+
+    function handleAbort() {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", handleAbort);
+      reject(new DOMException("Request canceled", "AbortError"));
+    }
+
+    signal?.addEventListener("abort", handleAbort, { once: true });
+  });
+
+  return mockResponse(file.name);
+}
 
   const formData = new FormData();
   formData.append("file", file);

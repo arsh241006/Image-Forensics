@@ -1,5 +1,9 @@
+/* =========================================
+   Design tokens
+   ========================================= */
+
 :root {
-  /* Colours */
+  /* Main colours */
   --bg: #f6f7f9;
   --surface: #ffffff;
   --text: #14181f;
@@ -7,6 +11,7 @@
   --border: #e1e5ea;
   --accent: #0f5c6e;
 
+  /* Verdict and message colours */
   --danger: #b42318;
   --danger-bg: #fef3f2;
 
@@ -18,12 +23,23 @@
 
   /* Shape and typography */
   --radius: 14px;
+
   --shadow:
     0 1px 2px rgba(16, 24, 40, 0.06),
     0 8px 24px rgba(16, 24, 40, 0.06);
 
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
 }
+
+/* =========================================
+   Base styles
+   ========================================= */
 
 * {
   box-sizing: border-box;
@@ -55,4 +71,157 @@ input {
 
 .muted {
   color: var(--muted);
+}
+
+/* =========================================
+   Upload area
+   ========================================= */
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+.dropzone:hover,
+.dropzone.dragging {
+  border-color: var(--accent);
+}
+
+.dropzone-title {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.dropzone-hint {
+  margin: 0;
+  color: var(--muted);
+}
+
+.field-error {
+  margin-top: 8px;
+  color: var(--danger);
+}
+
+/* =========================================
+   Shared card
+   ========================================= */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+/* =========================================
+   Analyzing state
+   ========================================= */
+
+.progress {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.progress-thumb {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.progress-title {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: -2px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================
+   Buttons
+   ========================================= */
+
+.btn-secondary {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+}
+
+/* =========================================
+   Error banner
+   ========================================= */
+
+.banner {
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.banner-error {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.banner-action {
+  margin-top: 12px;
+}
+
+/* =========================================
+   Temporary result display
+   ========================================= */
+
+.result-preview {
+  max-height: 400px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   Accessibility
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .dropzone {
+    transition: none;
+  }
+
+  .spinner {
+    animation: none;
+  }
 }

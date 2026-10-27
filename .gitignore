@@ -23,3 +23,15 @@ Thumbs.db
 
 # IDE
 .vscode/
+node_modules
+
+# Local Python environment
+.venv/
+
+# Local environment variables
+.env
+.env.*
+!.env.example
+
+# Local model archive
+freq_branch/baseline_model_archive.zip
