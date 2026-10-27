@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { analyzeImage } from "./api";
 
 function App() {
   const [file, setFile] = useState(null);
@@ -24,37 +25,24 @@ function App() {
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      setError("Please select an image first.");
-      return;
-    }
+  if (!file) {
+    setError("Please select an image first.");
+    return;
+  }
 
-    setLoading(true);
-    setError("");
-    setResult(null);
+  setLoading(true);
+  setError("");
+  setResult(null);
 
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("http://localhost:8000/predict", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to analyze image.");
-      }
-
-      const data = await response.json();
-
-      setResult(data);
-    } catch (err) {
-      setError(err.message || "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const data = await analyzeImage(file);
+    setResult(data);
+  } catch (err) {
+    setError(err.message || "Something went wrong.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div
