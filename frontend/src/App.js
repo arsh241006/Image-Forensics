@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { analyzeImage } from "./api";
 import UploadZone from "./components/UploadZone";
 import AnalysisProgress from "./components/AnalysisProgress";
+import VerdictCard from "./components/VerdictCard";
+import ImageCompare from "./components/ImageCompare";
+import WarningBanner from "./components/WarningBanner";
 
 function App() {
   const [phase, setPhase] = useState("idle");
@@ -106,27 +109,36 @@ function App() {
         </div>
       )}
 
-      {phase === "done" && (
-        <section className="card" aria-live="polite">
-          <h2>Analysis result</h2>
+      {phase === "done" && result && (
+  <section aria-label="Analysis result">
+    <WarningBanner warnings={result.warnings} />
 
-          <p className="muted">
-            This is a model output, not a certain determination.
-          </p>
+    <div className="result-layout">
+      <ImageCompare
+        originalUrl={previewUrl}
+        heatmapUrl={result.heatmap}
+      />
 
-          <pre className="result-preview">
-            {JSON.stringify(result, null, 2)}
-          </pre>
+      <VerdictCard
+        label={result.label}
+        probability={result.tampered_probability}
+      />
+    </div>
 
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={reset}
-          >
-            Analyze another image
-          </button>
-        </section>
-      )}
+    <button
+      type="button"
+      className="btn-secondary"
+      onClick={reset}
+    >
+      Analyze another image
+    </button>
+
+    <p className="footer-note">
+      Academic prototype built for a university project. This result is not
+      forensic-grade evidence.
+    </p>
+  </section>
+)}
     </main>
   );
 }
