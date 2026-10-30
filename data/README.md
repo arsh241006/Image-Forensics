@@ -157,3 +157,15 @@ COVERAGE/
 * `copy.tif` and `paste.tif` are also present but not used by the current loader.
 * No `readme.txt` shipped with this specific download — verify filenames
   with `Get-ChildItem`/`ls` before assuming this pattern if you re-download.
+
+
+
+
+  COVERAGE
+- data/COVERAGE/image: 200 .tif files in 100 pairs (<n>.tif = original, <n>t.tif = forged)
+- data/COVERAGE/label: .mat files; data/COVERAGE/mask: .tif masks (not used for testing)
+
+Columbia Uncompressed Image Splicing Detection
+- 4cam_auth/4cam_auth: 183 authentic .tif images
+- 4cam_splc/4cam_splc: 180 spliced .tif images
+- edgemask folders hold .jpg edge maps (not used for testing)
